@@ -134,30 +134,6 @@ export default function Header() {
             </div>
           </div>
         </div>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden bg-white border-t border-border">
-            <nav className="px-4 py-4 space-y-2">
-              <Link href="/products" legacyBehavior>
-                <a
-                  className="block px-4 py-3 text-text hover:bg-background-secondary rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  스토어
-                </a>
-              </Link>
-              <Link href="/cart" legacyBehavior>
-                <a
-                  className="block px-4 py-3 text-text hover:bg-background-secondary rounded-lg transition-colors"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  장바구니 {totalItems > 0 && `(${totalItems})`}
-                </a>
-              </Link>
-            </nav>
-          </div>
-        )}
       </header>
 
       {/* Mobile Search Drawer (Composition) */}
@@ -198,6 +174,51 @@ export default function Header() {
               }}
             />
           </div>
+        </div>
+      </Drawer>
+
+      {/* Mobile Menu Drawer (Right) */}
+      <Drawer
+        isOpen={isMobileMenuOpen}
+        onClose={() => setIsMobileMenuOpen(false)}
+        position="full"
+      >
+        <div className="flex flex-col h-full bg-white w-full">
+          <div className="flex items-center justify-between p-4 border-b border-border">
+            <h2 className="text-lg font-bold">메뉴</h2>
+            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -mr-2 text-text-secondary">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <nav className="p-4 space-y-4">
+            <Link href="/" legacyBehavior>
+              <a
+                className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                홈
+              </a>
+            </Link>
+            <Link href="/products" legacyBehavior>
+              <a
+                className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                스토어
+              </a>
+            </Link>
+            <Link href="/cart" legacyBehavior>
+              <a
+                className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                장바구니 {totalItems > 0 && <span className="text-primary font-bold">({totalItems})</span>}
+              </a>
+            </Link>
+          </nav>
         </div>
       </Drawer>
     </>
