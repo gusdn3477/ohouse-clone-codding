@@ -1,16 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { Product } from '@/lib/api';
-
-export interface CartItem {
-    product: Product;
-    quantity: number;
-}
-
-interface CartState {
-    items: CartItem[];
-    totalItems: number;
-    totalPrice: number;
-}
+import type { Product, CartItem, CartState } from '@/types';
 
 type CartAction =
     | { type: 'ADD_ITEM'; product: Product }

@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   useProductsByCategory,
@@ -15,7 +15,7 @@ import {
   prefetchInfiniteProducts,
 } from '@/lib/api';
 import ProductCard from '@/components/ProductCard';
-import CategoryButton from '@/components/CategoryButton';
+import { CategoryMobile, CategoryDesktop } from '@/components/CategoryList';
 import { formatCategoryName } from '@/utils';
 
 const VirtualProductGrid = dynamic(() => import('@/components/VirtualProductGrid'), {
@@ -63,12 +63,6 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const columns = useResponsiveColumns();
 
-  // Category Drag Scroll State
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-
   const { data: products = [] } = useProductsByCategory(currentCategory);
   const { data: searchResults = [] } = useSearchProducts(searchQuery || '');
   const { data: categories = [] } = useCategories();
@@ -91,50 +85,18 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
 
   const handleCategoryChange = useCallback(
     (category: string | null) => {
-      if (isDragging) return; // 드래그 중인 경우 클릭 방지
       if (category) {
         router.push(`/products?category=${encodeURIComponent(category)}`);
       } else {
         router.push('/products');
       }
     },
-    [router, isDragging]
+    [router]
   );
 
   const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     setSortBy(e.target.value as SortOption);
   }, []);
-
-  // Mouse Event Handlers for Drag Scroll
-  const onMouseDown = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    setIsDragging(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-
-  const onMouseLeave = () => {
-    setIsDragging(false);
-  };
-
-  const onMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2; // 스크롤 속도 조절
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
-
-  // Button Click Handlers (Arrow Buttons)
-  const scrollByAmount = (amount: number) => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
-    }
-  };
 
   const pageTitle = searchQuery
     ? `"${searchQuery}" 검색 결과 - 오늘의샵`
@@ -173,55 +135,23 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
             </p>
           </div>
 
-          {/* Category Pills with Drag Scroll */}
-          <div className="relative mb-6 group">
-            {/* Left Scroll Button */}
-            <button
-              onClick={() => scrollByAmount(-200)}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white shadow-md rounded-full hover:bg-background-secondary transition-colors opacity-0 group-hover:opacity-100 duration-200"
-              aria-label="이전 카테고리"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
 
-            {/* Scrollable Container */}
-            <div
-              ref={scrollRef}
-              className={`overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent px-4 pb-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-              onMouseDown={onMouseDown}
-              onMouseLeave={onMouseLeave}
-              onMouseUp={onMouseUp}
-              onMouseMove={onMouseMove}
-            >
-              <div className="flex gap-2 min-w-max">
-                <CategoryButton isActive={!currentCategory && !searchQuery} onClick={() => handleCategoryChange(null)}>
-                  전체
-                </CategoryButton>
-                {categories.map((category) => (
-                  <CategoryButton
-                    key={category}
-                    isActive={currentCategory === category}
-                    onClick={() => handleCategoryChange(category)}
-                  >
-                    {formatCategoryName(category)}
-                  </CategoryButton>
-                ))}
-              </div>
-            </div>
 
-            {/* Right Scroll Button */}
-            <button
-              onClick={() => scrollByAmount(200)}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 flex items-center justify-center bg-white shadow-md rounded-full hover:bg-background-secondary transition-colors opacity-0 group-hover:opacity-100 duration-200"
-              aria-label="다음 카테고리"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </button>
-          </div>
+          {/* Category List - Mobile (Scroll) */}
+          <CategoryMobile
+            className="lg:hidden"
+            categories={categories}
+            currentCategory={currentCategory}
+            onSelectCategory={handleCategoryChange}
+          />
+
+          {/* Category List - Desktop (Grid) */}
+          <CategoryDesktop
+            className="hidden lg:block"
+            categories={categories}
+            currentCategory={currentCategory}
+            onSelectCategory={handleCategoryChange}
+          />
 
           {/* Toolbar */}
           <div className="flex justify-between items-center mb-6">
