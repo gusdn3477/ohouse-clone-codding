@@ -62,7 +62,6 @@ export default function Header() {
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
                   onSearch={handleSearch}
-                  mode="desktop"
                 >
                   {({ close }) => (
                     <div>

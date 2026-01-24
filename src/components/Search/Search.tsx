@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ReactNode, useCallback } from 'react';
+import { useState, useRef, useEffect, ReactNode, useCallback, InputHTMLAttributes } from 'react';
 import { SearchBar } from './SearchBar';
 
 export interface SearchProps {
@@ -14,6 +14,8 @@ export interface SearchProps {
     placeholder?: string;
     /** className for the desktop container */
     className?: string;
+    /** Additional props to pass to the underlying input element */
+    inputProps?: Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'>;
 }
 
 export function Search({
@@ -22,7 +24,8 @@ export function Search({
     onSearch,
     children,
     placeholder = '검색어를 입력하세요',
-    className = ''
+    className = '',
+    inputProps
 }: SearchProps) {
     const [isFocused, setIsFocused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -62,9 +65,13 @@ export function Search({
                 value={query}
                 onChange={onQueryChange}
                 onSearch={handleSearch}
-                onFocus={() => setIsFocused(true)}
+                onFocus={(e) => {
+                    setIsFocused(true);
+                    inputProps?.onFocus?.(e);
+                }}
                 placeholder={placeholder}
                 inputClassName="bg-white border border-border"
+                {...inputProps}
             />
 
             {isFocused && children && (
