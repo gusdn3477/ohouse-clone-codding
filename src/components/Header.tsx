@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, memo } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { useCart } from '@/context/CartContext';
@@ -7,6 +7,15 @@ import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { Search, SearchItem } from '@/components/Search';
 
 const Drawer = dynamic(() => import('@/components/Drawer'), { ssr: false });
+
+// Memoized CartBadge component to prevent unnecessary re-renders
+const CartBadge = memo(({ count }: { count: number }) => (
+  count > 0 ? (
+    <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 min-w-5 h-5 flex items-center justify-center px-1.5 text-xs font-bold bg-accent text-white rounded-full">
+      {count}
+    </span>
+  ) : null
+));
 
 export default function Header() {
   const router = useRouter();
@@ -55,92 +64,92 @@ export default function Header() {
 
             {/* Search - Desktop & Mobile Trigger */}
             <div className="flex-1 max-w-xl mx-8 flex justify-end md:justify-center">
-                <div className="w-full hidden md:block">
-                     {/* Desktop Search */}
-                     <Search
-                        query={searchQuery}
-                        onQueryChange={setSearchQuery}
-                        onSearch={handleSearch}
-                     >
-                        {({ close }) => (
-                            <div>
-                                {recentSearches.length > 0 && (
-                                    <>
-                                        <div className="flex items-center justify-between px-4 py-2 bg-background-secondary">
-                                            <span className="text-xs font-bold text-text-secondary">최근 검색어</span>
-                                            <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
-                                        </div>
-                                        {recentSearches.map(term => (
-                                            <SearchItem 
-                                                key={term} 
-                                                onClick={() => { handleSelect(term); close(); }}
-                                                rightContent={
-                                                    <button 
-                                                        onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
-                                                        className="hover:text-red-500 p-1"
-                                                    >
-                                                        ×
-                                                    </button>
-                                                }
-                                            >
-                                                {term}
-                                            </SearchItem>
-                                        ))}
-                                    </>
-                                )}
-                                {recentSearches.length === 0 && (
-                                    <div className="p-4 text-sm text-text-secondary text-center">
-                                        최근 검색 내역이 없습니다.
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                     </Search>
-                </div>
-                
-                <div className="md:hidden">
-                    {/* Mobile Search Trigger & Drawer Content */}
-                    <Search
-                        query={searchQuery}
-                        onQueryChange={setSearchQuery}
-                        onSearch={handleSearch}
-                        mobileTrigger={
-                            <button className="p-2 text-text-secondary">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                  <circle cx="11" cy="11" r="8" />
-                                  <path d="m21 21-4.35-4.35" />
-                                </svg>
+              <div className="w-full hidden md:block">
+                {/* Desktop Search */}
+                <Search
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                  onSearch={handleSearch}
+                >
+                  {({ close }) => (
+                    <div>
+                      {recentSearches.length > 0 && (
+                        <>
+                          <div className="flex items-center justify-between px-4 py-2 bg-background-secondary">
+                            <span className="text-xs font-bold text-text-secondary">최근 검색어</span>
+                            <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
+                          </div>
+                          {recentSearches.map(term => (
+                            <SearchItem
+                              key={term}
+                              onClick={() => { handleSelect(term); close(); }}
+                              rightContent={
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
+                                  className="hover:text-red-500 p-1"
+                                >
+                                  ×
+                                </button>
+                              }
+                            >
+                              {term}
+                            </SearchItem>
+                          ))}
+                        </>
+                      )}
+                      {recentSearches.length === 0 && (
+                        <div className="p-4 text-sm text-text-secondary text-center">
+                          최근 검색 내역이 없습니다.
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Search>
+              </div>
+
+              <div className="md:hidden">
+                {/* Mobile Search Trigger & Drawer Content */}
+                <Search
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                  onSearch={handleSearch}
+                  mobileTrigger={
+                    <button className="p-2 text-text-secondary">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                      </svg>
+                    </button>
+                  }
+                >
+                  {({ close }) => (
+                    <div>
+                      <div className="p-4 pb-2 text-sm font-bold text-text">최근 검색어</div>
+                      {recentSearches.map(term => (
+                        <SearchItem
+                          key={term}
+                          onClick={() => { handleSelect(term); close(); }}
+                          rightContent={
+                            <button
+                              onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
+                              className="hover:text-red-500 p-1"
+                            >
+                              ×
                             </button>
-                        }
-                    >
-                        {({ close }) => (
-                             <div>
-                                <div className="p-4 pb-2 text-sm font-bold text-text">최근 검색어</div>
-                                {recentSearches.map(term => (
-                                    <SearchItem 
-                                        key={term} 
-                                        onClick={() => { handleSelect(term); close(); }}
-                                        rightContent={
-                                            <button 
-                                                onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
-                                                className="hover:text-red-500 p-1"
-                                            >
-                                                ×
-                                            </button>
-                                        }
-                                    >
-                                        {term}
-                                    </SearchItem>
-                                ))}
-                                {recentSearches.length > 0 && (
-                                    <div className="px-4 py-2 text-right">
-                                        <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </Search>
-                </div>
+                          }
+                        >
+                          {term}
+                        </SearchItem>
+                      ))}
+                      {recentSearches.length > 0 && (
+                        <div className="px-4 py-2 text-right">
+                          <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </Search>
+              </div>
             </div>
 
             {/* Navigation - Desktop */}
@@ -157,11 +166,7 @@ export default function Header() {
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  {totalItems > 0 && (
-                    <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 min-w-5 h-5 flex items-center justify-center px-1.5 text-xs font-bold bg-accent text-white rounded-full">
-                      {totalItems}
-                    </span>
-                  )}
+                  <CartBadge count={totalItems} />
                 </a>
               </Link>
             </nav>
@@ -175,11 +180,7 @@ export default function Header() {
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  {totalItems > 0 && (
-                    <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 min-w-5 h-5 flex items-center justify-center px-1.5 text-xs font-bold bg-accent text-white rounded-full">
-                      {totalItems}
-                    </span>
-                  )}
+                  <CartBadge count={totalItems} />
                 </a>
               </Link>
 

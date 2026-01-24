@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo, ReactNode } from 'react';
 import type { Product, CartItem, CartState } from '@/types';
 
 type CartAction =
@@ -97,16 +97,31 @@ export function CartProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('cart', JSON.stringify(state.items));
     }, [state.items]);
 
-    const addItem = (product: Product) => dispatch({ type: 'ADD_ITEM', product });
-    const removeItem = (productId: number) => dispatch({ type: 'REMOVE_ITEM', productId });
-    const updateQuantity = (productId: number, quantity: number) =>
-        dispatch({ type: 'UPDATE_QUANTITY', productId, quantity });
-    const clearCart = () => dispatch({ type: 'CLEAR_CART' });
+    const addItem = useCallback(
+        (product: Product) => dispatch({ type: 'ADD_ITEM', product }),
+        []
+    );
+    const removeItem = useCallback(
+        (productId: number) => dispatch({ type: 'REMOVE_ITEM', productId }),
+        []
+    );
+    const updateQuantity = useCallback(
+        (productId: number, quantity: number) =>
+            dispatch({ type: 'UPDATE_QUANTITY', productId, quantity }),
+        []
+    );
+    const clearCart = useCallback(
+        () => dispatch({ type: 'CLEAR_CART' }),
+        []
+    );
+
+    const value = useMemo(
+        () => ({ ...state, addItem, removeItem, updateQuantity, clearCart }),
+        [state, addItem, removeItem, updateQuantity, clearCart]
+    );
 
     return (
-        <CartContext.Provider
-            value={{ ...state, addItem, removeItem, updateQuantity, clearCart }}
-        >
+        <CartContext.Provider value={value}>
             {children}
         </CartContext.Provider>
     );

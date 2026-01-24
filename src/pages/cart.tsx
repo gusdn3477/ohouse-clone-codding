@@ -2,7 +2,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
-import { useCallback, memo } from 'react';
+import { useCallback, memo, useMemo } from 'react';
 
 const CartItem = memo(function CartItem({
   item,
@@ -66,19 +66,10 @@ const CartItem = memo(function CartItem({
 export default function CartPage() {
   const { items, totalItems, totalPrice, updateQuantity, removeItem, clearCart } = useCart();
 
-  const handleUpdateQuantity = useCallback(
-    (id: number, qty: number) => {
-      updateQuantity(id, qty);
-    },
-    [updateQuantity]
-  );
-
-  const handleRemove = useCallback(
-    (id: number) => {
-      removeItem(id);
-    },
-    [removeItem]
-  );
+  // Memoized calculations
+  const shippingFee = useMemo(() => (totalPrice >= 50 ? 0 : 5), [totalPrice]);
+  const finalTotal = useMemo(() => totalPrice + shippingFee, [totalPrice, shippingFee]);
+  const amountForFreeShipping = useMemo(() => Math.max(0, 50 - totalPrice), [totalPrice]);
 
   return (
     <>
@@ -118,8 +109,8 @@ export default function CartPage() {
                   <CartItem
                     key={item.product.id}
                     item={item}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onRemove={handleRemove}
+                    onUpdateQuantity={updateQuantity}
+                    onRemove={removeItem}
                   />
                 ))}
               </div>
@@ -135,16 +126,16 @@ export default function CartPage() {
                     </div>
                     <div className="flex justify-between text-text-secondary">
                       <span>배송비</span>
-                      <span>{totalPrice >= 50 ? '무료' : '$5.00'}</span>
+                      <span>{shippingFee === 0 ? '무료' : '$5.00'}</span>
                     </div>
                     <div className="border-t border-border pt-3 flex justify-between font-bold text-text">
                       <span>총 결제금액</span>
-                      <span className="text-lg">${(totalPrice + (totalPrice >= 50 ? 0 : 5)).toFixed(2)}</span>
+                      <span className="text-lg">${finalTotal.toFixed(2)}</span>
                     </div>
                   </div>
-                  {totalPrice < 50 && (
+                  {amountForFreeShipping > 0 && (
                     <p className="text-xs text-primary mt-3">
-                      ${(50 - totalPrice).toFixed(2)} 더 구매하면 무료 배송!
+                      ${amountForFreeShipping.toFixed(2)} 더 구매하면 무료 배송!
                     </p>
                   )}
                   <button className="btn-primary w-full mt-6">결제하기</button>
