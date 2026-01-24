@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import {
   useProductsByCategory,
@@ -62,6 +62,15 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
   const router = useRouter();
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const columns = useResponsiveColumns();
+  const [isPending, startTransition] = useTransition();
+
+  // Optimistic UI state
+  const [selectedCategory, setSelectedCategory] = useState(currentCategory);
+
+  // Sync state with URL
+  useEffect(() => {
+    setSelectedCategory(currentCategory);
+  }, [currentCategory]);
 
   const { data: products = [] } = useProductsByCategory(currentCategory);
   const { data: searchResults = [] } = useSearchProducts(searchQuery || '');
@@ -85,11 +94,17 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
 
   const handleCategoryChange = useCallback(
     (category: string | null) => {
-      if (category) {
-        router.push(`/products?category=${encodeURIComponent(category)}`);
-      } else {
-        router.push('/products');
-      }
+      // Immediate UI update
+      setSelectedCategory(category);
+
+      // Low priority navigation
+      startTransition(() => {
+        if (category) {
+          router.push(`/products?category=${encodeURIComponent(category)}`);
+        } else {
+          router.push('/products');
+        }
+      });
     },
     [router]
   );
@@ -141,7 +156,7 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
           <CategoryMobile
             className="lg:hidden"
             categories={categories}
-            currentCategory={currentCategory}
+            currentCategory={selectedCategory}
             onSelectCategory={handleCategoryChange}
           />
 
@@ -149,7 +164,7 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
           <CategoryDesktop
             className="hidden lg:block"
             categories={categories}
-            currentCategory={currentCategory}
+            currentCategory={selectedCategory}
             onSelectCategory={handleCategoryChange}
           />
 
@@ -170,16 +185,18 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
             </select>
           </div>
 
-          {/* Products */}
-          {!currentCategory && !searchQuery ? (
-            <VirtualProductGrid columns={columns} pageSize={12} />
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
-              {sortedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          )}
+          {/* Products with Transition Effect */}
+          <div className={`transition-opacity duration-300 ${isPending ? 'opacity-50' : 'opacity-100'}`}>
+            {!currentCategory && !searchQuery ? (
+              <VirtualProductGrid columns={columns} pageSize={12} />
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-6">
+                {sortedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Empty State */}
           {displayProducts.length === 0 && (searchQuery || currentCategory) && (
