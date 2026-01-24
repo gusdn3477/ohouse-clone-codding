@@ -1,21 +1,13 @@
 import Link from 'next/link';
-import { useState, useCallback, useEffect, memo } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { useCart } from '@/context/CartContext';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { Search, SearchItem } from '@/components/Search';
+import Badge from '@/components/Badge';
 
 const Drawer = dynamic(() => import('@/components/Drawer'), { ssr: false });
-
-// Memoized CartBadge component to prevent unnecessary re-renders
-const CartBadge = memo(({ count }: { count: number }) => (
-  count > 0 ? (
-    <span className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 min-w-5 h-5 flex items-center justify-center px-1.5 text-xs font-bold bg-accent text-white rounded-full">
-      {count}
-    </span>
-  ) : null
-));
 
 export default function Header() {
   const router = useRouter();
@@ -166,7 +158,7 @@ export default function Header() {
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  <CartBadge count={totalItems} />
+                  <Badge count={totalItems} variant="accent" position="absolute" />
                 </a>
               </Link>
             </nav>
@@ -180,7 +172,7 @@ export default function Header() {
                     <circle cx="20" cy="21" r="1" />
                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
                   </svg>
-                  <CartBadge count={totalItems} />
+                  <Badge count={totalItems} variant="accent" position="absolute" />
                 </a>
               </Link>
 

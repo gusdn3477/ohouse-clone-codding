@@ -3,6 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useCallback, memo, useMemo } from 'react';
+import Button from '@/components/Button';
+import Card from '@/components/Card';
 
 const CartItem = memo(function CartItem({
   item,
@@ -14,7 +16,7 @@ const CartItem = memo(function CartItem({
   onRemove: (id: number) => void;
 }) {
   return (
-    <div className="card flex gap-4 p-4">
+    <Card className="flex gap-4 p-4">
       <div className="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-background-secondary">
         <Image
           src={item.product.thumbnail}
@@ -59,7 +61,7 @@ const CartItem = memo(function CartItem({
           </button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 });
 
@@ -84,14 +86,14 @@ export default function CartPage() {
           <h1 className="text-2xl lg:text-3xl font-bold text-text mb-6">장바구니</h1>
 
           {items.length === 0 ? (
-            <div className="card text-center py-16">
+            <Card className="text-center py-16">
               <div className="text-6xl mb-4">🛒</div>
               <h2 className="text-xl font-bold text-text mb-2">장바구니가 비어있습니다</h2>
               <p className="text-text-secondary mb-6">마음에 드는 상품을 담아보세요!</p>
-              <Link href="/products" legacyBehavior>
-                <a className="btn-primary">쇼핑하러 가기</a>
+              <Link href="/products">
+                <Button variant="primary">쇼핑하러 가기</Button>
               </Link>
-            </div>
+            </Card>
           ) : (
             <div className="grid lg:grid-cols-3 gap-6">
               {/* Cart Items */}
@@ -117,7 +119,7 @@ export default function CartPage() {
 
               {/* Order Summary */}
               <div className="lg:col-span-1">
-                <div className="card p-6 sticky top-24">
+                <Card className="p-6 sticky top-24">
                   <h3 className="font-bold text-text mb-4">주문 요약</h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between text-text-secondary">
@@ -138,13 +140,13 @@ export default function CartPage() {
                       ${amountForFreeShipping.toFixed(2)} 더 구매하면 무료 배송!
                     </p>
                   )}
-                  <button className="btn-primary w-full mt-6">결제하기</button>
-                  <Link href="/products" legacyBehavior>
-                    <a className="block text-center text-sm text-text-secondary hover:text-primary mt-3">
+                  <Button variant="primary" fullWidth className="mt-6">결제하기</Button>
+                  <Link href="/products">
+                    <span className="block text-center text-sm text-text-secondary hover:text-primary mt-3 cursor-pointer">
                       쇼핑 계속하기
-                    </a>
+                    </span>
                   </Link>
-                </div>
+                </Card>
               </div>
             </div>
           )}

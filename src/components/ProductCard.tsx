@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { Product } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
 import { useState, useTransition, memo, useCallback } from 'react';
+import Badge from '@/components/Badge';
+import Card from '@/components/Card';
 
 interface ProductCardProps {
   product: Product;
@@ -50,7 +52,7 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
   return (
     <>
       <Link href={`/products/${product.id}`} legacyBehavior>
-        <a className="group card overflow-hidden">
+        <Card className="group overflow-hidden">
           {/* Image Container */}
           <div className="relative aspect-square bg-background-secondary overflow-hidden">
             <Image
@@ -63,21 +65,25 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
 
             {/* Discount Badge */}
             {product.discountPercentage > 0 && (
-              <span className="absolute top-3 left-3 badge badge-discount">
-                {Math.round(product.discountPercentage)}% OFF
-              </span>
+              <div className="absolute top-3 left-3">
+                <Badge variant="discount">
+                  {Math.round(product.discountPercentage)}% OFF
+                </Badge>
+              </div>
             )}
 
             {/* Stock Badge */}
             {product.stock < 10 && product.stock > 0 && (
-              <span className="absolute top-3 right-3 badge bg-yellow-500 text-white">
-                재고 {product.stock}개
-              </span>
+              <div className="absolute top-3 right-3">
+                <Badge className="bg-yellow-500 text-white">
+                  재고 {product.stock}개
+                </Badge>
+              </div>
             )}
 
             {product.stock === 0 && (
               <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <span className="badge badge-soldout text-base">품절</span>
+                <Badge variant="soldout" className="text-base">품절</Badge>
               </div>
             )}
 
@@ -85,8 +91,8 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
             {product.stock > 0 && (
               <button
                 className={`absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center rounded-full shadow-lg transition-all duration-300 ${isPending
-                    ? 'bg-primary text-white'
-                    : 'bg-white text-text-secondary opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-primary hover:text-white'
+                  ? 'bg-primary text-white'
+                  : 'bg-white text-text-secondary opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-primary hover:text-white'
                   }`}
                 onClick={handleAddToCart}
                 disabled={isPending}
@@ -136,7 +142,7 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
               )}
             </div>
           </div>
-        </a>
+        </Card>
       </Link>
 
       {/* Toast */}

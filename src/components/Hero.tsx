@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
+import Button from '@/components/Button';
 
 interface Banner {
   id: number;
@@ -82,13 +83,17 @@ const Hero = function Hero() {
               <p className="text-lg sm:text-xl opacity-90 mb-8">
                 {currentBanner.subtitle}
               </p>
-              <Link href={currentBanner.link} legacyBehavior>
-                <a className="inline-flex items-center gap-2 px-8 py-4 bg-white text-text font-semibold rounded-full hover:shadow-lg transition-all hover:-translate-y-0.5">
+              <Link href={currentBanner.link}>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  className="bg-white text-text rounded-full hover:shadow-lg"
+                >
                   쇼핑하러 가기
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
-                </a>
+                </Button>
               </Link>
             </div>
           </div>
