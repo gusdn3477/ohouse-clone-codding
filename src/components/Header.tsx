@@ -55,13 +55,14 @@ export default function Header() {
             </Link>
 
             {/* Search - Desktop & Mobile Trigger */}
-            <div className="flex-1 max-w-xl mx-8 flex justify-end md:justify-center">
+            <div className="flex-1 max-w-xl mx-2 md:mx-8 flex justify-end md:justify-center">
               <div className="w-full hidden md:block">
                 {/* Desktop Search */}
                 <Search
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
                   onSearch={handleSearch}
+                  mode="desktop"
                 >
                   {({ close }) => (
                     <div>
@@ -105,6 +106,7 @@ export default function Header() {
                   query={searchQuery}
                   onQueryChange={setSearchQuery}
                   onSearch={handleSearch}
+                  mode="mobile"
                   mobileTrigger={
                     <button className="p-2 text-text-secondary">
                       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

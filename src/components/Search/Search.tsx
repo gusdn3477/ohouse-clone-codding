@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ReactNode } from 'react';
+import { useState, useRef, useEffect, ReactNode, useCallback } from 'react';
 import { useViewport } from '@/hooks/useViewport';
 import Drawer from '@/components/Drawer';
 import { SearchBar } from './SearchBar';
@@ -18,6 +18,8 @@ export interface SearchProps {
     placeholder?: string;
     /** className for the desktop container */
     className?: string;
+    /** Force display mode */
+    mode?: 'auto' | 'desktop' | 'mobile';
 }
 
 export function Search({
@@ -27,19 +29,26 @@ export function Search({
     children,
     mobileTrigger,
     placeholder = '검색어를 입력하세요',
-    className = ''
+    className = '',
+    mode = 'auto'
 }: SearchProps) {
-    const { isMobile } = useViewport();
+    const { isMobile: viewportIsMobile } = useViewport();
     const [isOpen, setIsOpen] = useState(false); // Mobile Drawer state
     const [isFocused, setIsFocused] = useState(false); // Desktop focus state
     const desktopContainerRef = useRef<HTMLDivElement>(null);
     const mobileInputRef = useRef<HTMLInputElement>(null);
 
-    const close = () => {
+    // callback is memoized to prevent unnecessary re-renders of children
+    const close = useCallback(() => {
         setIsOpen(false);
         setIsFocused(false);
         mobileInputRef.current?.blur();
-    };
+    }, []);
+
+    // memoized specifically for Drawer onClose to prevent useEffect cleanup abuse
+    const handleDrawerClose = useCallback(() => {
+        setIsOpen(false);
+    }, []);
 
     const renderChildren = () => {
         if (typeof children === 'function') {
@@ -55,34 +64,40 @@ export function Search({
                 setIsFocused(false);
             }
         };
-        if (!isMobile) {
+        // Check viewport only if mode is auto or desktop
+        const shouldAddListener = mode === 'desktop' || (mode === 'auto' && !viewportIsMobile);
+
+        if (shouldAddListener) {
             document.addEventListener('mousedown', handleClickOutside);
             return () => document.removeEventListener('mousedown', handleClickOutside);
         }
-    }, [isMobile]);
+    }, [viewportIsMobile, mode]);
 
     // Mobile: Focus input when drawer opens
     useEffect(() => {
-        if (isMobile && isOpen) {
+        const isMobileMode = mode === 'mobile' || (mode === 'auto' && viewportIsMobile);
+        if (isMobileMode && isOpen) {
             const timer = setTimeout(() => {
                 mobileInputRef.current?.focus();
             }, 150);
             return () => clearTimeout(timer);
         }
-    }, [isMobile, isOpen]);
+    }, [viewportIsMobile, isOpen, mode]);
 
     const handleSearch = (val: string) => {
         onSearch(val);
         close();
     };
 
-    if (isMobile) {
+    const isMobileMode = mode === 'mobile' || (mode === 'auto' && viewportIsMobile);
+
+    if (isMobileMode) {
         return (
             <>
                 <div onClick={() => setIsOpen(true)} className="cursor-pointer">
                     {mobileTrigger || (
                         <button className="p-2" aria-label="검색 열기">
-                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <circle cx="11" cy="11" r="8" />
                                 <path d="m21 21-4.35-4.35" />
                             </svg>
@@ -90,11 +105,11 @@ export function Search({
                     )}
                 </div>
 
-                <Drawer isOpen={isOpen} onClose={() => setIsOpen(false)} position="full">
+                <Drawer isOpen={isOpen} onClose={handleDrawerClose} position="full">
                     <div className="flex flex-col h-full bg-white">
                         <div className="flex items-center gap-2 p-4 border-b border-border">
-                             <button
-                                onClick={() => setIsOpen(false)}
+                            <button
+                                onClick={handleDrawerClose}
                                 className="p-2 -ml-2 text-text hover:bg-background-secondary rounded-full"
                                 aria-label="검색 닫기"
                             >
@@ -123,7 +138,7 @@ export function Search({
         );
     }
 
-    // Desktop
+    // Desktop mode
     return (
         <div ref={desktopContainerRef} className={`relative ${className}`}>
             <SearchBar
@@ -134,7 +149,7 @@ export function Search({
                 placeholder={placeholder}
                 inputClassName="bg-white border border-border"
             />
-            
+
             {isFocused && children && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-dropdown border border-border z-50 overflow-hidden">
                     {renderChildren()}
