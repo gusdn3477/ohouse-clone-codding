@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { SearchBar } from '@/components/Search/SearchBar';
-import { SearchItem } from '@/components/Search/SearchItem';
+import { SearchBar } from '@/components/features/search/Search/SearchBar';
+import { SearchItem } from '@/components/features/search/Search/SearchItem';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
 
 export default function SearchPage() {

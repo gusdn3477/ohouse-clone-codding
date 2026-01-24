@@ -14,11 +14,11 @@ import {
   fetchProductsByCategory as fetchProductsByCategoryFn,
   prefetchInfiniteProducts,
 } from '@/lib/api';
-import ProductCard from '@/components/ProductCard';
-import { CategoryMobile, CategoryDesktop } from '@/components/CategoryList';
+import ProductCard from '@/components/features/product/ProductCard';
+import { CategoryMobile, CategoryDesktop } from '@/components/features/category/CategoryList';
 import { formatCategoryName } from '@/utils';
 
-const VirtualProductGrid = dynamic(() => import('@/components/VirtualProductGrid'), {
+const VirtualProductGrid = dynamic(() => import('@/components/features/product/VirtualProductGrid'), {
   ssr: false,
   loading: () => <GridSkeleton />,
 });

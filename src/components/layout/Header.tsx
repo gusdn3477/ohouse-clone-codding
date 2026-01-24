@@ -1,13 +1,11 @@
 import Link from 'next/link';
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import dynamic from 'next/dynamic';
 import { useCart } from '@/context/CartContext';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
-import { Search, SearchItem } from '@/components/Search';
-import Badge from '@/components/Badge';
-
-const Drawer = dynamic(() => import('@/components/Drawer'), { ssr: false });
+import { Search, SearchItem } from '@/components/features/search/Search';
+import Badge from '@/components/common/Badge';
+import Drawer from '@/components/common/Drawer';
 
 export default function Header() {
   const router = useRouter();
@@ -169,45 +167,46 @@ export default function Header() {
       <Drawer
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
-        position="full"
       >
-        <div className="flex flex-col h-full bg-white w-full">
-          <div className="flex items-center justify-between p-4 border-b border-border">
-            <h2 className="text-lg font-bold">메뉴</h2>
-            <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -mr-2 text-text-secondary">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
+        <Drawer.Content position="full">
+          <div className="flex flex-col h-full bg-white w-full">
+            <div className="flex items-center justify-between p-4 border-b border-border">
+              <h2 className="text-lg font-bold">메뉴</h2>
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 -ml-2 text-text-secondary">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            <nav className="p-4 space-y-4">
+              <Link href="/" legacyBehavior>
+                <a
+                  className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  홈
+                </a>
+              </Link>
+              <Link href="/products" legacyBehavior>
+                <a
+                  className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  스토어
+                </a>
+              </Link>
+              <Link href="/cart" legacyBehavior>
+                <a
+                  className="block text-lg font-medium text-text hover:text-primary transition-colors"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  장바구니 {totalItems > 0 && <span className="text-primary font-bold">({totalItems})</span>}
+                </a>
+              </Link>
+            </nav>
           </div>
-          <nav className="p-4 space-y-4">
-            <Link href="/" legacyBehavior>
-              <a
-                className="block text-lg font-medium text-text hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                홈
-              </a>
-            </Link>
-            <Link href="/products" legacyBehavior>
-              <a
-                className="block text-lg font-medium text-text hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                스토어
-              </a>
-            </Link>
-            <Link href="/cart" legacyBehavior>
-              <a
-                className="block text-lg font-medium text-text hover:text-primary transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                장바구니 {totalItems > 0 && <span className="text-primary font-bold">({totalItems})</span>}
-              </a>
-            </Link>
-          </nav>
-        </div>
+        </Drawer.Content>
       </Drawer>
     </>
   );

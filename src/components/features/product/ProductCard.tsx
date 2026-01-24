@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { Product } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
 import { useState, useTransition, memo, useCallback } from 'react';
-import Badge from '@/components/Badge';
-import Card from '@/components/Card';
+import Badge from '@/components/common/Badge';
+import Card from '@/components/common/Card';
 
 interface ProductCardProps {
   product: Product;

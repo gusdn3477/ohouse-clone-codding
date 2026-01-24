@@ -4,8 +4,8 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useProducts, useCategories, prefetchProducts, prefetchCategories } from '@/lib/api';
 import { formatCategoryName, getCategoryEmoji } from '@/utils';
-import Hero from '@/components/Hero';
-import ProductCard from '@/components/ProductCard';
+import Hero from '@/components/features/home/Hero';
+import ProductCard from '@/components/features/product/ProductCard';
 
 export default function Home() {
   const { data: products = [] } = useProducts();

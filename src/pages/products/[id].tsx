@@ -13,7 +13,7 @@ import {
   queryKeys,
 } from '@/lib/api';
 import { useCart } from '@/context/CartContext';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/features/product/ProductCard';
 
 interface ProductDetailProps {
   productId: number;

@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import ErrorBoundary from './ErrorBoundary';
+import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 interface LayoutProps {
     children: ReactNode;

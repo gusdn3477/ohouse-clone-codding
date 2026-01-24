@@ -1,6 +1,6 @@
 // Input 컴포넌트 사용 예시
 
-import Input from '@/components/Input';
+import Input from '@/components/common/Input';
 import { useState } from 'react';
 
 export default function InputExamples() {

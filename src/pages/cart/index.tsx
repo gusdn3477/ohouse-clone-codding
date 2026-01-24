@@ -3,8 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/context/CartContext';
 import { useCallback, memo, useMemo } from 'react';
-import Button from '@/components/Button';
-import Card from '@/components/Card';
+import Button from '@/components/common/Button';
+import Card from '@/components/common/Card';
 
 const CartItem = memo(function CartItem({
   item,

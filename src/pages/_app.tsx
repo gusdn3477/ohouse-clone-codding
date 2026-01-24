@@ -3,7 +3,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
 import { CartProvider } from '@/context/CartContext';
-import Layout from '@/components/Layout';
+import Layout from '@/components/layout/Layout';
 import '../styles/globals.css';
 
 // pageProps 타입 정의
