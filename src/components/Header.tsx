@@ -101,48 +101,15 @@ export default function Header() {
               </div>
 
               <div className="md:hidden">
-                {/* Mobile Search Trigger & Drawer Content */}
-                <Search
-                  query={searchQuery}
-                  onQueryChange={setSearchQuery}
-                  onSearch={handleSearch}
-                  mode="mobile"
-                  mobileTrigger={
-                    <button className="p-2 text-text-secondary">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="8" />
-                        <path d="m21 21-4.35-4.35" />
-                      </svg>
-                    </button>
-                  }
-                >
-                  {({ close }) => (
-                    <div>
-                      <div className="p-4 pb-2 text-sm font-bold text-text">최근 검색어</div>
-                      {recentSearches.map(term => (
-                        <SearchItem
-                          key={term}
-                          onClick={() => { handleSelect(term); close(); }}
-                          rightContent={
-                            <button
-                              onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
-                              className="hover:text-red-500 p-1"
-                            >
-                              ×
-                            </button>
-                          }
-                        >
-                          {term}
-                        </SearchItem>
-                      ))}
-                      {recentSearches.length > 0 && (
-                        <div className="px-4 py-2 text-right">
-                          <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </Search>
+                {/* Mobile Search Trigger -> Navigate to /search Page */}
+                <Link href="/search" legacyBehavior>
+                  <a className="p-2 text-text-secondary block" aria-label="검색 페이지로 이동">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="11" cy="11" r="8" />
+                      <path d="m21 21-4.35-4.35" />
+                    </svg>
+                  </a>
+                </Link>
               </div>
             </div>
 
