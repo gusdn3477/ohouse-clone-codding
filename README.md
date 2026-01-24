@@ -28,6 +28,15 @@ The project follows a standard Next.js Page Router structure:
 -   `src/styles`: Global styles and configuration.
 -   `src/types`: TypeScript type definitions.
 
+## Crawler Configuration
+
+To prevent search engine indexing (e.g., Googlebot), a `robots.txt` file is included in the `public` directory with the following configuration:
+
+```
+User-agent: *
+Disallow: /
+```
+
 ## Getting Started
 
 First, run the development server:
