@@ -54,6 +54,15 @@ export default function Footer() {
 
                 {/* Divider */}
                 <div className="border-t border-border mt-10 pt-8">
+                    {/* Disclaimer */}
+                    <div className="border-t border-border mt-10 pt-8 pb-8 text-center bg-gray-50 rounded-lg p-4 mb-8">
+                        <p className="text-sm font-medium text-text-secondary">
+                            ⚠️ 본 사이트는 포트폴리오 및 AI 활용 테스트 목적으로 제작된 클론 코딩 사이트입니다.
+                            <br />
+                            실제로 운영되는 사이트가 아닙니다.
+                        </p>
+                    </div>
+
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-xs text-text-secondary">
                             © 2024 오늘의샵. All rights reserved.
