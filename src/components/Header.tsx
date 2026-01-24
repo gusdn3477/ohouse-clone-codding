@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import dynamic from 'next/dynamic';
 import { useCart } from '@/context/CartContext';
 import { useRecentSearches } from '@/hooks/useRecentSearches';
-import SearchBar from './Search/SearchBar';
-import SearchInput from './Search/SearchInput';
-import SearchSuggestions from './Search/SearchSuggestions';
-import Drawer from '@/components/Drawer';
+import { Search, SearchItem } from '@/components/Search';
+
+const Drawer = dynamic(() => import('@/components/Drawer'), { ssr: false });
 
 export default function Header() {
   const router = useRouter();
@@ -14,10 +14,8 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Search State
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const { recentSearches, addSearch, removeSearch, clearSearches } = useRecentSearches();
-  const mobileInputRef = useRef<HTMLInputElement>(null);
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -30,19 +28,16 @@ export default function Header() {
     }
   }, [router.query.search]);
 
-  // Focus input when drawer opens
-  useEffect(() => {
-    if (isSearchOpen) {
-      setTimeout(() => mobileInputRef.current?.focus(), 100);
-    }
-  }, [isSearchOpen]);
-
   // Handle Search Submission
   const handleSearch = (term: string) => {
     if (!term.trim()) return;
     addSearch(term);
-    setIsSearchOpen(false); // Close drawer
     router.push(`/products?search=${encodeURIComponent(term.trim())}`);
+  };
+
+  const handleSelect = (keyword: string) => {
+    setSearchQuery(keyword);
+    handleSearch(keyword);
   };
 
   return (
@@ -58,9 +53,94 @@ export default function Header() {
               </a>
             </Link>
 
-            {/* Search Bar - Desktop */}
-            <div className="hidden md:block flex-1 max-w-xl mx-8">
-              <SearchBar />
+            {/* Search - Desktop & Mobile Trigger */}
+            <div className="flex-1 max-w-xl mx-8 flex justify-end md:justify-center">
+                <div className="w-full hidden md:block">
+                     {/* Desktop Search */}
+                     <Search
+                        query={searchQuery}
+                        onQueryChange={setSearchQuery}
+                        onSearch={handleSearch}
+                     >
+                        {({ close }) => (
+                            <div>
+                                {recentSearches.length > 0 && (
+                                    <>
+                                        <div className="flex items-center justify-between px-4 py-2 bg-background-secondary">
+                                            <span className="text-xs font-bold text-text-secondary">최근 검색어</span>
+                                            <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
+                                        </div>
+                                        {recentSearches.map(term => (
+                                            <SearchItem 
+                                                key={term} 
+                                                onClick={() => { handleSelect(term); close(); }}
+                                                rightContent={
+                                                    <button 
+                                                        onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
+                                                        className="hover:text-red-500 p-1"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                }
+                                            >
+                                                {term}
+                                            </SearchItem>
+                                        ))}
+                                    </>
+                                )}
+                                {recentSearches.length === 0 && (
+                                    <div className="p-4 text-sm text-text-secondary text-center">
+                                        최근 검색 내역이 없습니다.
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                     </Search>
+                </div>
+                
+                <div className="md:hidden">
+                    {/* Mobile Search Trigger & Drawer Content */}
+                    <Search
+                        query={searchQuery}
+                        onQueryChange={setSearchQuery}
+                        onSearch={handleSearch}
+                        mobileTrigger={
+                            <button className="p-2 text-text-secondary">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                  <circle cx="11" cy="11" r="8" />
+                                  <path d="m21 21-4.35-4.35" />
+                                </svg>
+                            </button>
+                        }
+                    >
+                        {({ close }) => (
+                             <div>
+                                <div className="p-4 pb-2 text-sm font-bold text-text">최근 검색어</div>
+                                {recentSearches.map(term => (
+                                    <SearchItem 
+                                        key={term} 
+                                        onClick={() => { handleSelect(term); close(); }}
+                                        rightContent={
+                                            <button 
+                                                onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
+                                                className="hover:text-red-500 p-1"
+                                            >
+                                                ×
+                                            </button>
+                                        }
+                                    >
+                                        {term}
+                                    </SearchItem>
+                                ))}
+                                {recentSearches.length > 0 && (
+                                    <div className="px-4 py-2 text-right">
+                                        <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </Search>
+                </div>
             </div>
 
             {/* Navigation - Desktop */}
@@ -86,20 +166,8 @@ export default function Header() {
               </Link>
             </nav>
 
-            {/* Mobile Actions */}
+            {/* Mobile Actions (Cart + Menu) */}
             <div className="flex items-center gap-2 md:hidden">
-              {/* Search Icon (Opens Drawer) */}
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                className="p-2 text-text-secondary"
-                aria-label="검색"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-              </button>
-
               <Link href="/cart" legacyBehavior>
                 <a className="relative p-2 text-text-secondary">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -135,47 +203,6 @@ export default function Header() {
           </div>
         </div>
       </header>
-
-      {/* Mobile Search Drawer (Composition) */}
-      <Drawer isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)}>
-        <div className="flex flex-col h-full bg-white">
-          {/* Header */}
-          <div className="flex items-center gap-2 p-4 border-b border-border">
-            <button
-              onClick={() => setIsSearchOpen(false)}
-              className="p-2 -ml-2 text-text hover:bg-background-secondary rounded-full"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </button>
-            <div className="flex-1">
-              <SearchInput
-                ref={mobileInputRef}
-                value={searchQuery}
-                onChange={setSearchQuery}
-                onSearch={handleSearch}
-                placeholder="상품 검색..."
-                inputClassName="border-none bg-background-secondary focus:ring-0"
-                containerClassName="w-full"
-              />
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="flex-1 overflow-y-auto">
-            <SearchSuggestions
-              recentSearches={recentSearches}
-              onRemoveRecent={removeSearch}
-              onClearRecent={clearSearches}
-              onSelect={(keyword) => {
-                setSearchQuery(keyword);
-                handleSearch(keyword);
-              }}
-            />
-          </div>
-        </div>
-      </Drawer>
 
       {/* Mobile Menu Drawer (Right) */}
       <Drawer

@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState, useRef, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 interface DrawerProps {
@@ -17,19 +17,38 @@ export default function Drawer({
     position = 'full', // 현재는 full screen 기본
 }: DrawerProps) {
     const [mounted, setMounted] = useState(false);
+    const isBackRef = useRef(false);
 
-    // Body scroll lock
+    // Body scroll lock & Back button handling
     useEffect(() => {
         setMounted(true);
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+
+            // Push history state
+            window.history.pushState({ drawerOpen: true }, '', window.location.href);
+
+            const handlePopState = () => {
+                isBackRef.current = true;
+                onClose();
+            };
+
+            window.addEventListener('popstate', handlePopState);
+
+            return () => {
+                document.body.style.overflow = '';
+                window.removeEventListener('popstate', handlePopState);
+
+                // If closing manually (not by back button), revert history
+                if (!isBackRef.current) {
+                    window.history.back();
+                }
+                isBackRef.current = false;
+            };
         } else {
             document.body.style.overflow = '';
         }
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [isOpen]);
+    }, [isOpen, onClose]);
 
     if (!mounted || !isOpen) return null;
 
