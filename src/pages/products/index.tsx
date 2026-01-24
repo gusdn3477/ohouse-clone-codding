@@ -2,7 +2,7 @@ import { GetServerSideProps } from 'next';
 import { QueryClient, dehydrate } from '@tanstack/react-query';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
-import { useState, useMemo, useCallback, useEffect, useTransition } from 'react';
+import { useState, useCallback, useEffect, useTransition } from 'react';
 import dynamic from 'next/dynamic';
 import {
   useProductsByCategory,
@@ -17,6 +17,8 @@ import {
 import ProductCard from '@/components/features/product/ProductCard';
 import { CategoryMobile, CategoryDesktop } from '@/components/features/category/CategoryList';
 import { formatCategoryName } from '@/utils';
+import { useResponsiveColumns } from '@/hooks/useResponsiveColumns';
+import { useProductSort } from '@/hooks/useProductSort';
 
 const VirtualProductGrid = dynamic(() => import('@/components/features/product/VirtualProductGrid'), {
   ssr: false,
@@ -33,34 +35,13 @@ function GridSkeleton() {
   );
 }
 
-type SortOption = 'default' | 'price-asc' | 'price-desc' | 'rating';
-
 interface ProductsPageProps {
   currentCategory: string | null;
   searchQuery: string | null;
 }
 
-function useResponsiveColumns() {
-  const [columns, setColumns] = useState(4);
-
-  useEffect(() => {
-    const updateColumns = () => {
-      if (window.innerWidth < 640) setColumns(2);
-      else if (window.innerWidth < 1024) setColumns(3);
-      else setColumns(4);
-    };
-
-    updateColumns();
-    window.addEventListener('resize', updateColumns);
-    return () => window.removeEventListener('resize', updateColumns);
-  }, []);
-
-  return columns;
-}
-
 export default function ProductsPage({ currentCategory, searchQuery }: ProductsPageProps) {
   const router = useRouter();
-  const [sortBy, setSortBy] = useState<SortOption>('default');
   const columns = useResponsiveColumns();
   const [isPending, startTransition] = useTransition();
 
@@ -78,19 +59,8 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
 
   const displayProducts = searchQuery ? searchResults : products;
 
-  const sortedProducts = useMemo(() => {
-    const sorted = [...displayProducts];
-    switch (sortBy) {
-      case 'price-asc':
-        return sorted.sort((a, b) => a.price - b.price);
-      case 'price-desc':
-        return sorted.sort((a, b) => b.price - a.price);
-      case 'rating':
-        return sorted.sort((a, b) => b.rating - a.rating);
-      default:
-        return sorted;
-    }
-  }, [displayProducts, sortBy]);
+  // Uses the custom hook for sorting logic
+  const { sortBy, handleSortChange, sortedProducts } = useProductSort(displayProducts);
 
   const handleCategoryChange = useCallback(
     (category: string | null) => {
@@ -108,10 +78,6 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
     },
     [router]
   );
-
-  const handleSortChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSortBy(e.target.value as SortOption);
-  }, []);
 
   const pageTitle = searchQuery
     ? `"${searchQuery}" 검색 결과 - 오늘의샵`
@@ -149,8 +115,6 @@ export default function ProductsPage({ currentCategory, searchQuery }: ProductsP
               {(searchQuery || currentCategory) ? `${displayProducts.length}개의 상품` : '스크롤하면 더 많은 상품이 로드됩니다'}
             </p>
           </div>
-
-
 
           {/* Category List - Mobile (Scroll) */}
           <CategoryMobile

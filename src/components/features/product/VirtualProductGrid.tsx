@@ -1,6 +1,7 @@
 import { useRef, useCallback, useMemo, useEffect, memo, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { useInfiniteProducts, Product } from '@/lib/api';
+import { useInfiniteProducts } from '@/lib/api';
+import { Product } from '@/types';
 import { throttle } from '@/utils';
 import ProductCard from './ProductCard';
 

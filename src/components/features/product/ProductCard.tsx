@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Product } from '@/lib/api';
+import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { useState, useTransition, memo, useCallback } from 'react';
 import Badge from '@/components/common/Badge';
