@@ -1,20 +1,23 @@
 import Link from 'next/link';
 import { useState, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useCart } from '@/context/CartContext';
-import { useRecentSearches } from '@/hooks/useRecentSearches';
 import { Search, SearchItem } from '@/components/features/search/Search';
 import Badge from '@/components/common/Badge';
 import Drawer from '@/components/common/Drawer';
+import { useCartSummary } from '@/microfrontends/cart/public';
+import {
+  clearRecentSearches,
+  removeRecentSearch,
+  submitSearch,
+  useRecentSearchesState,
+} from '@/microfrontends/search/public';
 
 export default function Header() {
   const router = useRouter();
-  const { totalItems } = useCart();
+  const { totalItems } = useCartSummary();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Search State
   const [searchQuery, setSearchQuery] = useState('');
-  const { recentSearches, addSearch, removeSearch, clearSearches } = useRecentSearches();
+  const { items: recentSearches } = useRecentSearchesState();
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((prev) => !prev);
@@ -29,9 +32,10 @@ export default function Header() {
 
   // Handle Search Submission
   const handleSearch = (term: string) => {
-    if (!term.trim()) return;
-    addSearch(term);
-    router.push(`/products?search=${encodeURIComponent(term.trim())}`);
+    const normalized = term.trim();
+    if (!normalized) return;
+    submitSearch(normalized);
+    router.push(`/products?search=${encodeURIComponent(normalized)}`);
   };
 
   const handleSelect = (keyword: string) => {
@@ -67,7 +71,7 @@ export default function Header() {
                         <>
                           <div className="flex items-center justify-between px-4 py-2 bg-background-secondary">
                             <span className="text-xs font-bold text-text-secondary">최근 검색어</span>
-                            <button onClick={clearSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
+                            <button onClick={clearRecentSearches} className="text-xs text-text-secondary hover:text-text underline">전체 삭제</button>
                           </div>
                           {recentSearches.map(term => (
                             <SearchItem
@@ -75,7 +79,7 @@ export default function Header() {
                               onClick={() => { handleSelect(term); close(); }}
                               rightContent={
                                 <button
-                                  onClick={(e) => { e.stopPropagation(); removeSearch(term); }}
+                                  onClick={(e) => { e.stopPropagation(); removeRecentSearch(term); }}
                                   className="hover:text-red-500 p-1"
                                 >
                                   ×
