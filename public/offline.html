@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#35c5f0" />
+    <title>오프라인 - 오늘의샵</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary: #35c5f0;
+        --bg: #f7f8fa;
+        --card: #ffffff;
+        --text: #2f3438;
+        --muted: #828c94;
+        --border: #ededed;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        background: radial-gradient(circle at top, #dff7ff 0, var(--bg) 42%);
+        color: var(--text);
+        font-family: Pretendard, Inter, system-ui, -apple-system, sans-serif;
+      }
+
+      main {
+        width: min(100%, 480px);
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px 28px;
+        box-shadow: 0 24px 60px rgba(47, 52, 56, 0.08);
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 72px;
+        height: 72px;
+        margin-bottom: 20px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, var(--primary), #64d7ff);
+        color: white;
+        font-size: 30px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 28px;
+        line-height: 1.2;
+      }
+
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      a {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 24px;
+        padding: 14px 20px;
+        min-width: 180px;
+        border-radius: 14px;
+        background: var(--primary);
+        color: white;
+        text-decoration: none;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="badge">🏠</div>
+      <h1>지금은 오프라인입니다</h1>
+      <p>
+        네트워크 연결이 복구되면 오늘의샵의 최신 상품과 검색 결과를 다시 불러올 수 있습니다.
+        이미 방문한 페이지는 일부 오프라인에서도 계속 열립니다.
+      </p>
+      <a href="/">홈으로 돌아가기</a>
+    </main>
+  </body>
+  </html>
