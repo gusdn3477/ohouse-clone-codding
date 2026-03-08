@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import Hero from '@/components/features/home/Hero';
+import PushNotificationsPanel from '@/components/features/pwa/PushNotificationsPanel';
 import HomeCatalogWidgets from '@/microfrontends/catalog/components/HomeCatalogWidgets';
 
 export default function HomePage() {
@@ -17,6 +18,7 @@ export default function HomePage() {
       </Head>
 
       <Hero />
+      <PushNotificationsPanel />
       <HomeCatalogWidgets />
 
       <section className="py-12 lg:py-16">

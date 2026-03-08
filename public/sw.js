@@ -100,3 +100,64 @@ self.addEventListener('fetch', (event) => {
 
   event.respondWith(staleWhileRevalidate(request));
 });
+
+function parsePushData(event) {
+  if (!event.data) {
+    return null;
+  }
+
+  try {
+    return event.data.json();
+  } catch (error) {
+    return {
+      title: '오늘의샵 알림',
+      body: event.data.text(),
+      url: '/',
+      tag: 'todayshop-notification',
+    };
+  }
+}
+
+self.addEventListener('push', (event) => {
+  const payload = parsePushData(event) || {
+    title: '오늘의샵 알림',
+    body: '새로운 업데이트가 도착했습니다.',
+    url: '/',
+    tag: 'todayshop-notification',
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: '/icon-192x192.png',
+      badge: '/favicon-32x32.png',
+      tag: payload.tag || 'todayshop-notification',
+      data: {
+        url: payload.url || '/',
+      },
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if ('focus' in client && client.url.startsWith(self.location.origin)) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+
+      return undefined;
+    })
+  );
+});
