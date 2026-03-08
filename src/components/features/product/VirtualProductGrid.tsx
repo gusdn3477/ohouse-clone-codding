@@ -1,6 +1,6 @@
 import { useRef, useCallback, useMemo, useEffect, memo, useState } from 'react';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { useInfiniteProducts } from '@/lib/api';
+import { useInfiniteProducts } from '@/microfrontends/catalog/api/hooks';
 import { Product } from '@/types';
 import { throttle } from '@/utils';
 import ProductCard from './ProductCard';
@@ -91,9 +91,7 @@ const VirtualProductGrid = memo(function VirtualProductGrid({
         <div ref={containerRef} className="space-y-4">
             {/* 상품 수 정보 */}
             <div className="flex items-center justify-between text-sm text-text-secondary">
-                <span>
-                    {allProducts.length}개 상품
-                </span>
+                <span>{totalCount > 0 ? `총 ${totalCount}개 상품` : `${allProducts.length}개 상품`}</span>
             </div>
 
             {/* 가상 스크롤 컨테이너 (relative) */}
