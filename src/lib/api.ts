@@ -1,8 +1,3 @@
-// Services (Fetchers)
-export * from '@/services/api/products';
-export * from '@/services/api/categories';
-
-// Query Hooks
-export * from '@/hooks/queries/useProductQueries';
-export * from '@/hooks/queries/useCategoryQueries';
-export * from '@/hooks/queries/queryKeys';
+export * from '@/microfrontends/catalog/api/hooks';
+export * from '@/microfrontends/catalog/api/queryKeys';
+export * from '@/microfrontends/catalog/api/services';
