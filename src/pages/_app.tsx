@@ -1,9 +1,10 @@
 import { QueryClient, QueryClientProvider, HydrationBoundary, dehydrate, DehydratedState } from '@tanstack/react-query';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
-import { useState } from 'react';
-import { CartProvider } from '@/context/CartContext';
+import { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
+import { ensureCartStoreReady } from '@/microfrontends/cart/store';
+import { ensureRecentSearchesReady } from '@/microfrontends/search/store';
 import '../styles/globals.css';
 
 // pageProps 타입 정의
@@ -26,6 +27,11 @@ export default function App({ Component, pageProps }: AppProps<PageProps>) {
             })
     );
 
+    useEffect(() => {
+        ensureCartStoreReady();
+        ensureRecentSearchesReady();
+    }, []);
+
     return (
         <>
             <Head>
@@ -35,11 +41,9 @@ export default function App({ Component, pageProps }: AppProps<PageProps>) {
             </Head>
             <QueryClientProvider client={queryClient}>
                 <HydrationBoundary state={pageProps.dehydratedState}>
-                    <CartProvider>
-                        <Layout>
-                            <Component {...pageProps} />
-                        </Layout>
-                    </CartProvider>
+                    <Layout>
+                        <Component {...pageProps} />
+                    </Layout>
                 </HydrationBoundary>
             </QueryClientProvider>
         </>

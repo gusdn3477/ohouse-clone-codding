@@ -17,7 +17,7 @@ export const SearchItem = forwardRef<HTMLDivElement, SearchItemProps>(
                 onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
-                        onClick?.(e as any);
+                        e.currentTarget.click();
                     }
                 }}
                 className={`w-full flex items-center justify-between px-4 py-3 text-left hover:bg-background-secondary transition-colors cursor-pointer ${active ? 'bg-background-secondary' : ''

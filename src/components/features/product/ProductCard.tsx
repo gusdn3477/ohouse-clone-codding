@@ -1,17 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
-import { useCart } from '@/context/CartContext';
 import { useState, useTransition, memo, useCallback } from 'react';
 import Badge from '@/components/common/Badge';
 import Card from '@/components/common/Card';
+import { dispatchAddToCart } from '@/microfrontends/cart/public';
 
 interface ProductCardProps {
   product: Product;
 }
 
 const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
   const [showToast, setShowToast] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -21,13 +20,13 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
       e.stopPropagation();
 
       startTransition(() => {
-        addItem(product);
+        dispatchAddToCart(product);
         setShowToast(true);
       });
 
       setTimeout(() => setShowToast(false), 2000);
     },
-    [addItem, product]
+    [product]
   );
 
   // 할인가 계산
