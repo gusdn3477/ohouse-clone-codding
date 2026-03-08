@@ -3,6 +3,7 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useEffect, useState } from 'react';
 import Layout from '@/components/layout/Layout';
+import { useRegisterServiceWorker } from '@/hooks/useRegisterServiceWorker';
 import { ensureCartStoreReady } from '@/microfrontends/cart/store';
 import { ensureRecentSearchesReady } from '@/microfrontends/search/store';
 import '../styles/globals.css';
@@ -32,12 +33,11 @@ export default function App({ Component, pageProps }: AppProps<PageProps>) {
         ensureRecentSearchesReady();
     }, []);
 
+    useRegisterServiceWorker();
     return (
         <>
             <Head>
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
-                <meta name="theme-color" content="#0f172a" />
-                <link rel="icon" href="/favicon.ico" />
             </Head>
             <QueryClientProvider client={queryClient}>
                 <HydrationBoundary state={pageProps.dehydratedState}>
