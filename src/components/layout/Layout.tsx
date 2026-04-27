@@ -4,17 +4,17 @@ import Footer from './Footer';
 import ErrorBoundary from '@/components/common/ErrorBoundary';
 
 interface LayoutProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export default function Layout({ children }: LayoutProps) {
-    return (
-        <div className="flex flex-col min-h-screen bg-background-secondary">
-            <Header />
-            <main className="flex-1">
-                <ErrorBoundary>{children}</ErrorBoundary>
-            </main>
-            <Footer />
-        </div>
-    );
+  return (
+    <div className="flex min-h-screen flex-col bg-background-secondary">
+      <Header />
+      <main className="flex-1">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
+      <Footer />
+    </div>
+  );
 }

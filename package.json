@@ -6,34 +6,48 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint src --ext .ts,.tsx --fix",
+    "lint": "eslint src --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\""
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\"",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx scripts/seed-products.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@sentry/nextjs": "^10.50.0",
     "@tanstack/react-query": "^5.90.16",
     "@tanstack/react-virtual": "^3.13.18",
-    "next": "12.3.4",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "drizzle-orm": "^0.45.2",
+    "next": "16.2.4",
+    "postgres": "^3.4.9",
+    "react": "19.2.5",
+    "react-dom": "19.2.5",
     "react-error-boundary": "^6.0.3"
   },
   "devDependencies": {
     "@types/node": "^18",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@typescript-eslint/eslint-plugin": "^6",
-    "@typescript-eslint/parser": "^6",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "autoprefixer": "^10.4.14",
-    "eslint": "^8",
-    "eslint-config-next": "12.3.4",
-    "eslint-config-prettier": "^9",
-    "eslint-plugin-react": "^7",
-    "eslint-plugin-react-hooks": "^4",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.4",
     "postcss": "^8.4.24",
     "prettier": "^3",
     "prettier-plugin-tailwindcss": "^0.5",
     "tailwindcss": "^3.3.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
+  },
+  "pnpm": {
+    "overrides": {
+      "@types/react": "19.2.14",
+      "@types/react-dom": "19.2.3"
+    }
   }
 }

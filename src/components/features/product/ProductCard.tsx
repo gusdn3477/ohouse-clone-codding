@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from '@/types';
@@ -51,103 +53,111 @@ const ProductCard = memo(function ProductCard({ product }: ProductCardProps) {
 
   return (
     <>
-      <Link href={`/products/${product.id}`} legacyBehavior>
-        <Card className="group overflow-hidden">
-          {/* Image Container */}
-          <div className="relative aspect-square bg-background-secondary overflow-hidden">
+      <Card className="group overflow-hidden">
+        <div className="relative aspect-square overflow-hidden bg-background-secondary">
+          <Link
+            href={`/products/${product.id}`}
+            className="block h-full"
+            aria-label={`${product.title} 상세 보기`}
+          >
             <Image
               src={product.thumbnail}
               alt={product.title}
-              layout="fill"
-              objectFit="cover"
               className="transition-transform duration-300 group-hover:scale-105"
+              fill
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              style={{
+                objectFit: 'cover',
+              }}
             />
 
-            {/* Discount Badge */}
             {product.discountPercentage > 0 && (
-              <div className="absolute top-3 left-3">
-                <Badge variant="discount">
-                  {Math.round(product.discountPercentage)}% OFF
-                </Badge>
+              <div className="absolute left-3 top-3">
+                <Badge variant="discount">{Math.round(product.discountPercentage)}% OFF</Badge>
               </div>
             )}
 
             {/* Stock Badge */}
             {product.stock < 10 && product.stock > 0 && (
-              <div className="absolute top-3 right-3">
-                <Badge className="bg-yellow-500 text-white">
-                  재고 {product.stock}개
-                </Badge>
+              <div className="absolute right-3 top-3">
+                <Badge className="bg-yellow-500 text-white">재고 {product.stock}개</Badge>
               </div>
             )}
 
             {product.stock === 0 && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <Badge variant="soldout" className="text-base">품절</Badge>
+              <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                <Badge variant="soldout" className="text-base">
+                  품절
+                </Badge>
               </div>
             )}
+          </Link>
 
-            {/* Quick Add Button */}
-            {product.stock > 0 && (
-              <button
-                className={`absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center rounded-full shadow-lg transition-all duration-300 ${isPending
+          {product.stock > 0 && (
+            <button
+              type="button"
+              className={`absolute bottom-3 right-3 flex h-10 w-10 items-center justify-center rounded-full shadow-lg transition-all duration-300 ${
+                isPending
                   ? 'bg-primary text-white'
-                  : 'bg-white text-text-secondary opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-primary hover:text-white'
-                  }`}
-                onClick={handleAddToCart}
-                disabled={isPending}
-              >
-                {isPending ? (
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                    <line x1="3" y1="6" x2="21" y2="6" />
-                    <path d="M16 10a4 4 0 01-8 0" />
-                  </svg>
-                )}
-              </button>
+                  : 'translate-y-2 bg-white text-text-secondary opacity-0 hover:bg-primary hover:text-white group-hover:translate-y-0 group-hover:opacity-100'
+              }`}
+              onClick={handleAddToCart}
+              disabled={isPending}
+              aria-label={`${product.title} 장바구니 담기`}
+            >
+              {isPending ? (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
+                  <line x1="3" y1="6" x2="21" y2="6" />
+                  <path d="M16 10a4 4 0 01-8 0" />
+                </svg>
+              )}
+            </button>
+          )}
+        </div>
+
+        <Link href={`/products/${product.id}`} className="block space-y-2 p-4">
+          <span className="text-xs font-medium uppercase tracking-wide text-text-secondary">
+            {product.brand}
+          </span>
+
+          {/* Title */}
+          <h3 className="line-clamp-2 text-sm font-medium leading-snug text-text transition-colors group-hover:text-primary">
+            {product.title}
+          </h3>
+
+          {/* Rating */}
+          <div className="flex items-center gap-1">
+            <div className="flex text-xs">{renderStars(product.rating)}</div>
+            <span className="text-xs text-text-secondary">({product.rating.toFixed(1)})</span>
+          </div>
+
+          {/* Price */}
+          <div className="flex items-baseline gap-2 pt-1">
+            {discountedPrice ? (
+              <>
+                <span className="text-lg font-bold text-accent">${discountedPrice.toFixed(2)}</span>
+                <span className="price-original">${product.price.toFixed(2)}</span>
+              </>
+            ) : (
+              <span className="text-lg font-bold text-text">${product.price.toFixed(2)}</span>
             )}
           </div>
-
-          {/* Info */}
-          <div className="p-4 space-y-2">
-            {/* Brand */}
-            <span className="text-xs text-text-secondary font-medium uppercase tracking-wide">
-              {product.brand}
-            </span>
-
-            {/* Title */}
-            <h3 className="text-sm font-medium text-text leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-              {product.title}
-            </h3>
-
-            {/* Rating */}
-            <div className="flex items-center gap-1">
-              <div className="flex text-xs">{renderStars(product.rating)}</div>
-              <span className="text-xs text-text-secondary">({product.rating.toFixed(1)})</span>
-            </div>
-
-            {/* Price */}
-            <div className="flex items-baseline gap-2 pt-1">
-              {discountedPrice ? (
-                <>
-                  <span className="text-lg font-bold text-accent">
-                    ${discountedPrice.toFixed(2)}
-                  </span>
-                  <span className="price-original">${product.price.toFixed(2)}</span>
-                </>
-              ) : (
-                <span className="text-lg font-bold text-text">${product.price.toFixed(2)}</span>
-              )}
-            </div>
-          </div>
-        </Card>
-      </Link>
+        </Link>
+      </Card>
 
       {/* Toast */}
       {showToast && (
-        <div className="fixed bottom-6 right-6 px-5 py-3 bg-text text-white rounded-lg shadow-lg z-50 animate-slide-in">
+        <div className="animate-slide-in fixed bottom-6 right-6 z-50 rounded-lg bg-text px-5 py-3 text-white shadow-lg">
           ✓ 장바구니에 추가되었습니다
         </div>
       )}

@@ -1,39 +1,41 @@
 import { Product, ProductsResponse } from '@/types';
 
-const API_BASE = 'https://dummyjson.com';
+const API_BASE = '/api';
+
+async function fetchApi<T>(path: string): Promise<T> {
+  if (typeof window === 'undefined') {
+    throw new Error('Client API service called on the server. Use @/server/catalog instead.');
+  }
+
+  const res = await fetch(`${API_BASE}${path}`);
+  if (!res.ok) throw new Error('Failed to fetch catalog data');
+  return res.json();
+}
 
 export async function fetchAllProducts(): Promise<Product[]> {
-    const res = await fetch(`${API_BASE}/products?limit=100`);
-    if (!res.ok) throw new Error('Failed to fetch products');
-    const data: ProductsResponse = await res.json();
-    return data.products;
+  const data = await fetchApi<ProductsResponse>('/products?limit=100');
+  return data.products;
 }
 
 export async function fetchProductsPaginated(
-    limit: number,
-    skip: number
+  limit: number,
+  skip: number
 ): Promise<ProductsResponse> {
-    const res = await fetch(`${API_BASE}/products?limit=${limit}&skip=${skip}`);
-    if (!res.ok) throw new Error('Failed to fetch products');
-    return res.json();
+  return fetchApi<ProductsResponse>(`/products?limit=${limit}&skip=${skip}`);
 }
 
 export async function fetchProduct(id: number): Promise<Product> {
-    const res = await fetch(`${API_BASE}/products/${id}`);
-    if (!res.ok) throw new Error('Failed to fetch product');
-    return res.json();
+  return fetchApi<Product>(`/products/${id}`);
 }
 
 export async function fetchProductsByCategory(category: string): Promise<Product[]> {
-    const res = await fetch(`${API_BASE}/products/category/${encodeURIComponent(category)}`);
-    if (!res.ok) throw new Error('Failed to fetch products by category');
-    const data: ProductsResponse = await res.json();
-    return data.products;
+  const data = await fetchApi<ProductsResponse>(
+    `/products?category=${encodeURIComponent(category)}`
+  );
+  return data.products;
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
-    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(query)}`);
-    if (!res.ok) throw new Error('Failed to search products');
-    const data: ProductsResponse = await res.json();
-    return data.products;
+  const data = await fetchApi<ProductsResponse>(`/products?search=${encodeURIComponent(query)}`);
+  return data.products;
 }

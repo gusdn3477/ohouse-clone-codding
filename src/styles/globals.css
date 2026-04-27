@@ -26,7 +26,12 @@
   }
 
   body {
-    font-family: 'Pretendard', 'Inter', system-ui, -apple-system, sans-serif;
+    font-family:
+      'Pretendard',
+      'Inter',
+      system-ui,
+      -apple-system,
+      sans-serif;
     background-color: var(--background-secondary);
     color: var(--text);
     line-height: 1.6;
@@ -59,48 +64,47 @@
 }
 
 @layer components {
-
   /* 버튼 스타일 */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3;
-    @apply bg-primary text-white font-semibold rounded-lg;
+    @apply rounded-lg bg-primary font-semibold text-white;
     @apply transition-all duration-200;
-    @apply hover:bg-primary-dark hover:-translate-y-0.5;
+    @apply hover:-translate-y-0.5 hover:bg-primary-dark;
     @apply active:translate-y-0;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3;
-    @apply bg-white text-text border border-border rounded-lg font-semibold;
+    @apply rounded-lg border border-border bg-white font-semibold text-text;
     @apply transition-all duration-200;
     @apply hover:border-primary hover:text-primary;
   }
 
   .btn-accent {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3;
-    @apply bg-accent text-white font-semibold rounded-lg;
+    @apply rounded-lg bg-accent font-semibold text-white;
     @apply transition-all duration-200;
     @apply hover:bg-accent-dark;
   }
 
   /* 카드 스타일 */
   .card {
-    @apply bg-white rounded-xl shadow-card;
+    @apply rounded-xl bg-white shadow-card;
     @apply transition-all duration-200;
     @apply hover:shadow-card-hover;
   }
 
   /* 입력 필드 */
   .input {
-    @apply w-full px-4 py-3 bg-background-secondary border border-border rounded-lg;
+    @apply w-full rounded-lg border border-border bg-background-secondary px-4 py-3;
     @apply text-text placeholder:text-text-tertiary;
     @apply transition-all duration-200;
-    @apply focus:outline-none focus:border-primary focus:bg-white;
+    @apply focus:border-primary focus:bg-white focus:outline-none;
   }
 
   /* 배지 */
   .badge {
-    @apply inline-flex items-center px-2 py-1 text-xs font-semibold rounded;
+    @apply inline-flex items-center rounded px-2 py-1 text-xs font-semibold;
   }
 
   .badge-discount {
@@ -141,7 +145,6 @@
 }
 
 @layer utilities {
-
   /* 텍스트 줄임 */
   .line-clamp-1 {
     display: -webkit-box;
@@ -175,7 +178,7 @@
   }
 
   .price-original {
-    @apply text-text-tertiary line-through text-sm;
+    @apply text-sm text-text-tertiary line-through;
   }
 
   .price-discount {

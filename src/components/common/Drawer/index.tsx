@@ -3,8 +3,8 @@ import DrawerOverlay from './DrawerOverlay';
 import DrawerContent from './DrawerContent';
 
 const Drawer = Object.assign(DrawerRoot, {
-    Overlay: DrawerOverlay,
-    Content: DrawerContent,
+  Overlay: DrawerOverlay,
+  Content: DrawerContent,
 });
 
 export default Drawer;

@@ -1,6 +1,7 @@
+'use client';
+
 import Link from 'next/link';
 import { useState, useEffect, useCallback } from 'react';
-import Button from '@/components/common/Button';
 
 interface Banner {
   id: number;
@@ -70,30 +71,30 @@ const Hero = function Hero() {
   return (
     <section className="relative overflow-hidden">
       {/* Banner Slider */}
-      <div
-        className={`${currentBanner.bgColor} transition-all duration-500`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div className={`${currentBanner.bgColor} transition-all duration-500`}>
+        <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+          <div className="flex flex-col items-center justify-between gap-8 lg:flex-row">
             <div className={`text-center lg:text-left ${currentBanner.textColor}`}>
-              <span className="text-5xl mb-4 block">{currentBanner.emoji}</span>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="mb-4 block text-5xl">{currentBanner.emoji}</span>
+              <h1 className="mb-4 text-3xl font-bold sm:text-4xl lg:text-5xl">
                 {currentBanner.title}
               </h1>
-              <p className="text-lg sm:text-xl opacity-90 mb-8">
-                {currentBanner.subtitle}
-              </p>
-              <Link href={currentBanner.link}>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  className="bg-white text-text rounded-full hover:shadow-lg"
+              <p className="mb-8 text-lg opacity-90 sm:text-xl">{currentBanner.subtitle}</p>
+              <Link
+                href={currentBanner.link}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-border bg-white px-8 py-4 text-lg font-semibold text-text transition-all duration-200 hover:border-primary hover:text-primary hover:shadow-lg"
+              >
+                쇼핑하러 가기
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
                 >
-                  쇼핑하러 가기
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </Button>
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
               </Link>
             </div>
           </div>
@@ -103,33 +104,46 @@ const Hero = function Hero() {
       {/* Navigation Arrows */}
       <button
         onClick={prevSlide}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+        className="absolute left-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-colors hover:bg-white"
         aria-label="이전"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M15 18l-6-6 6-6" />
         </svg>
       </button>
       <button
         onClick={nextSlide}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 rounded-full shadow-md hover:bg-white transition-colors"
+        className="absolute right-4 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-md transition-colors hover:bg-white"
         aria-label="다음"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+        >
           <path d="M9 18l6-6-6-6" />
         </svg>
       </button>
 
       {/* Dots */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+      <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
         {banners.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all ${index === currentSlide
-              ? 'w-6 bg-white'
-              : 'bg-white/50 hover:bg-white/75'
-              }`}
+            className={`h-2 w-2 rounded-full transition-all ${
+              index === currentSlide ? 'w-6 bg-white' : 'bg-white/50 hover:bg-white/75'
+            }`}
             aria-label={`슬라이드 ${index + 1}`}
           />
         ))}
